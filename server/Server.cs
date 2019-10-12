@@ -41,7 +41,7 @@ namespace server
 
         private async Task AcceptPlayer()
         {
-            Console.WriteLine("Start to accept");
+            Console.WriteLine("Start to accept player");
             Socket handler = await listener.AcceptAsync();
 
             var bytes = new byte[1024];
@@ -79,11 +79,11 @@ namespace server
         class PlayerConnection
         {
             private Socket socket;
-            public Player Player { get; }
+            private Player player;
 
             public PlayerConnection(string playerName, Arena arena, Socket socket)
             {
-                Player = new Player(playerName, arena);
+                player = new Player(playerName, arena);
                 this.socket = socket;
                 StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
             }
@@ -103,7 +103,9 @@ namespace server
 
                         try
                         {
-                            this.ProcessCommand(command);
+                            ProcessCommand(command);
+                            string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}";
+                            socket.Send(Encoding.UTF8.GetBytes(screen));
                         }
                         catch (Exception ex)
                         {
@@ -125,9 +127,9 @@ namespace server
 
             private void ProcessCommand(string command)
             {
-                var parsedCommand = command.ToLower();
+                var parsedCommand = command.ToUpper();
 
-                if (parsedCommand.StartsWith("move"))
+                if (parsedCommand.StartsWith(GameCommands.MOVE.ToString()))
                 {
                     string direction = command.Split(":")[1];
 
@@ -138,11 +140,11 @@ namespace server
 
                     MovementDirection parsedDirection = (MovementDirection)Enum.Parse(typeof(MovementDirection), direction.Trim(), true);
 
-                    Player.Move(parsedDirection);
+                    player.Move(parsedDirection);
                 }
-                else if (parsedCommand.StartsWith("exit"))
+                else if (parsedCommand.StartsWith(GameCommands.EXIT.ToString()))
                 {
-                    Player.Exit();
+                    player.Exit();
                 }
                 else
                 {
@@ -151,4 +153,12 @@ namespace server
             }
         }
     }
+
+    public enum GameCommands
+    {
+        EXIT,
+        MOVE,
+        SCREEN,
+    }
 }
+

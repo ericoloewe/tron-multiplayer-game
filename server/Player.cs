@@ -1,24 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace server
 {
     class Player
     {
-        private Arena arena;
         public IList<Point> Trace { get; private set; }
         public Point Point { get; private set; }
         public string Name { get; }
+        private Arena arena;
 
-        public Player(string playerName, Arena arena)
+        internal Player(string playerName, Arena arena)
         {
-            this.Name = playerName;
-            this.Point = new Point();
+            Name = playerName;
+            Point = new Point();
             this.arena = arena;
+            arena.AddPlayer(this);
         }
 
-        public void Move(MovementDirection direction)
+        internal void Exit()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal string GetScreenAsString()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal void Move(MovementDirection direction)
         {
             if (direction == MovementDirection.DOWN && Point.Y < arena.Height)
             {
@@ -36,11 +46,6 @@ namespace server
             {
                 Point.Y--;
             }
-        }
-
-        internal void Exit()
-        {
-            throw new NotImplementedException();
         }
     }
 
