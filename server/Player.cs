@@ -6,20 +6,21 @@ namespace server
 {
     class Player
     {
+        private Arena arena;
+        public IList<Point> Trace { get; private set; }
+        public Point Point { get; private set; }
         public string Name { get; }
-        public Point Point { get; }
-        public IList<Point> Trace { get; set; }
-        public Arena Arena { get; set; }
 
-        public Player(string playerName)
+        public Player(string playerName, Arena arena)
         {
             this.Name = playerName;
             this.Point = new Point();
+            this.arena = arena;
         }
 
         public void Move(MovementDirection direction)
         {
-            if (direction == MovementDirection.DOWN && Point.Y < Arena.Height)
+            if (direction == MovementDirection.DOWN && Point.Y < arena.Height)
             {
                 Point.Y++;
             }
@@ -27,7 +28,7 @@ namespace server
             {
                 Point.X--;
             }
-            else if (direction == MovementDirection.RIGHT && Point.X < Arena.Width)
+            else if (direction == MovementDirection.RIGHT && Point.X < arena.Width)
             {
                 Point.X++;
             }
@@ -35,6 +36,11 @@ namespace server
             {
                 Point.Y--;
             }
+        }
+
+        internal void Exit()
+        {
+            throw new NotImplementedException();
         }
     }
 

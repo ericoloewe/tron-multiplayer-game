@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -9,29 +10,39 @@ namespace server
 {
     class Server
     {
-        private int port;
-        private const int MAX_PLAYERS_IN_THE_GAME = 4;
         private Arena arena;
-        private PlayerConnection[] players = new PlayerConnection[MAX_PLAYERS_IN_THE_GAME];
+        private const int MAX_PLAYERS_IN_THE_GAME = 4;
+        private IList<PlayerConnection> players = new List<PlayerConnection>();
+        private int port;
         private Socket listener;
 
         public Server(int port)
         {
-            CreateSocket();
+            this.arena = new Arena();
             this.port = port;
+            CreateSocket();
         }
 
 
-        public void Start()
+        public async Task Start()
         {
             Console.WriteLine("Starting server");
-            AcceptPlayers().ContinueWith((t) => Console.WriteLine("Task has continued"));
+            await StartCycle();
         }
 
-        private async Task AcceptPlayers()
+        private async Task StartCycle()
         {
-            Socket handler = await listener.AcceptAsync();
+            while (true)
+            {
+                await AcceptPlayer();
+            }
+        }
+
+
+        private async Task AcceptPlayer()
+        {
             Console.WriteLine("Start to accept");
+            Socket handler = await listener.AcceptAsync();
 
             var bytes = new byte[1024];
 
@@ -41,15 +52,15 @@ namespace server
 
             Console.WriteLine("Nome jogador: {0}", playerName);
 
-            if (players.Length == MAX_PLAYERS_IN_THE_GAME)
+            if (players.Count == MAX_PLAYERS_IN_THE_GAME)
             {
-                handler.Send(Encoding.UTF8.GetBytes("The game is already full"));
+                handler.Send(Encoding.UTF8.GetBytes("The game is already full\n"));
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
             }
             else
             {
-                players[players.Length] = new PlayerConnection(playerName, handler);
+                players.Add(new PlayerConnection(playerName, arena, handler));
             }
         }
 
@@ -59,19 +70,84 @@ namespace server
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
 
             listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            listener.Bind(localEndPoint);
+            listener.Listen(1000);
 
             Console.WriteLine("Socket connected to {0}", localEndPoint.ToString());
         }
 
         class PlayerConnection
         {
-            public Player Player { get; }
             private Socket socket;
+            public Player Player { get; }
 
-            public PlayerConnection(string playerName, Socket socket)
+            public PlayerConnection(string playerName, Arena arena, Socket socket)
             {
-                this.Player = new Player(playerName);
+                Player = new Player(playerName, arena);
                 this.socket = socket;
+                StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
+            }
+
+            private async Task StartCycle()
+            {
+                var task = new Task(() =>
+                {
+                    string command = "";
+
+                    while (!command.ToLower().StartsWith("exit"))
+                    {
+                        var bytes = new byte[1024];
+                        var bytesRec = socket.Receive(bytes);
+
+                        command = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+
+                        try
+                        {
+                            this.ProcessCommand(command);
+                        }
+                        catch (Exception ex)
+                        {
+                            socket.Send(Encoding.UTF8.GetBytes("invalid-command\n"));
+                            Console.Write("Stack: ");
+                            Console.WriteLine(ex);
+                        }
+                    }
+
+                    socket.Send(Encoding.UTF8.GetBytes("goodbye\n"));
+                    socket.Shutdown(SocketShutdown.Both);
+                    socket.Close();
+                });
+
+                task.Start();
+
+                await task;
+            }
+
+            private void ProcessCommand(string command)
+            {
+                var parsedCommand = command.ToLower();
+
+                if (parsedCommand.StartsWith("move"))
+                {
+                    string direction = command.Split(":")[1];
+
+                    if (direction == null)
+                    {
+                        throw new ArgumentException($"Invalid command: {command}");
+                    }
+
+                    MovementDirection parsedDirection = (MovementDirection)Enum.Parse(typeof(MovementDirection), direction.Trim(), true);
+
+                    Player.Move(parsedDirection);
+                }
+                else if (parsedCommand.StartsWith("exit"))
+                {
+                    Player.Exit();
+                }
+                else
+                {
+                    throw new ArgumentException($"Invalid command: {command}");
+                }
             }
         }
     }
