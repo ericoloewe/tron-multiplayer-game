@@ -6,6 +6,6 @@ namespace server
     {
         private static Server server = new Server(8080);
 
-        static void Main(string[] args) => server.Start();
+        static void Main(string[] args) => server.Start().Wait();
     }
 }
