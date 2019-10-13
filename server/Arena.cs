@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 namespace server
 {
@@ -30,6 +32,13 @@ namespace server
             Point point = player.Point;
 
             matrix[point.X][point.Y] = point;
+        }
+
+        public override string ToString()
+        {
+            var colums = matrix.Select(m => $"[{string.Join(",", m.ToList())}]").ToArray();
+
+            return $"{string.Join(",", colums)}";
         }
     }
 }

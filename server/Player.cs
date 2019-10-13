@@ -25,7 +25,7 @@ namespace server
 
         public string GetScreenAsString()
         {
-            throw new NotImplementedException();
+            return arena.ToString();
         }
 
         public void Move(MovementDirection direction)
