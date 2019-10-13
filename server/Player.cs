@@ -68,6 +68,13 @@ namespace server
         {
             return this == Player.Point;
         }
+
+        public override string ToString()
+        {
+            var playerOrTrace = IsTrace() ? "PLAYER" : "TRACE";
+
+            return $"{{{playerOrTrace};{X};{Y}}}";
+        }
     }
 
     enum MovementDirection

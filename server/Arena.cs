@@ -38,7 +38,7 @@ namespace server
         {
             var colums = matrix.Select(m => $"[{string.Join(",", m.ToList())}]").ToArray();
 
-            return $"{string.Join(",", colums)}";
+            return $"[{string.Join(",", colums)}]";
         }
     }
 }
