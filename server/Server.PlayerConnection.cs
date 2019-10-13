@@ -35,7 +35,7 @@ namespace server
                         try
                         {
                             ProcessCommand(command);
-                            string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}";
+                            string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}\n";
                             socket.Send(Encoding.UTF8.GetBytes(screen));
                         }
                         catch (Exception ex)

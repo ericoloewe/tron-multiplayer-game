@@ -7,8 +7,8 @@ namespace server
 {
     class Arena
     {
-        public int Width { get; } = 800;
-        public int Height { get; } = 800;
+        public int Width { get; } = 80;
+        public int Height { get; } = 80;
         private IList<Player> players = new List<Player>();
         private Point[][] matrix;
 
@@ -29,7 +29,7 @@ namespace server
 
         public void Move(Player player)
         {
-            Point point = player.Point;
+            Point point = player.Position;
 
             matrix[point.X][point.Y] = point;
         }

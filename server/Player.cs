@@ -6,16 +6,17 @@ namespace server
     class Player
     {
         public IList<Point> Trace { get; private set; } = new List<Point>();
-        public Point Point { get; private set; }
+        public Point Position { get; private set; }
         public string Name { get; }
         private Arena arena;
 
         public Player(string playerName, Arena arena)
         {
             Name = playerName;
-            Point = new Point(this);
+            Position = new Point(0, 0, this);
             this.arena = arena;
             arena.AddPlayer(this);
+            arena.Move(this);
         }
 
         public void Exit()
@@ -30,50 +31,60 @@ namespace server
 
         public void Move(MovementDirection direction)
         {
-            Trace.Add(Point);
+            Trace.Add(Position);
 
-            if (direction == MovementDirection.DOWN && Point.Y < arena.Height)
+            Point nextPoint = (Point)Position.Clone();
+
+            if (direction == MovementDirection.DOWN && Position.Y < arena.Height)
             {
-                Point.Y++;
+                nextPoint.Y++;
             }
-            else if (direction == MovementDirection.LEFT && Point.X > 0)
+            else if (direction == MovementDirection.LEFT && Position.X > 0)
             {
-                Point.X--;
+                nextPoint.X--;
             }
-            else if (direction == MovementDirection.RIGHT && Point.X < arena.Width)
+            else if (direction == MovementDirection.RIGHT && Position.X < arena.Width)
             {
-                Point.X++;
+                nextPoint.X++;
             }
-            else if (direction == MovementDirection.UP && Point.Y > 0)
+            else if (direction == MovementDirection.UP && Position.Y > 0)
             {
-                Point.Y--;
+                nextPoint.Y--;
             }
 
+            Position = nextPoint;
             arena.Move(this);
         }
     }
 
-    class Point
+    class Point : ICloneable
     {
         public int X { get; set; }
         public int Y { get; set; }
         public Player Player { get; }
 
-        public Point(Player player)
+        public Point(int x, int y, Player player)
         {
+            X = x;
+            Y = y;
             Player = player;
         }
 
         public bool IsTrace()
         {
-            return this == Player.Point;
+            return this == Player.Position;
         }
 
         public override string ToString()
         {
             var playerOrTrace = IsTrace() ? "PLAYER" : "TRACE";
 
-            return $"{{{playerOrTrace};{X};{Y}}}";
+            return $"{{{playerOrTrace};{Player.Name};{X};{Y}}}";
+        }
+
+        public object Clone()
+        {
+            return new Point(X, Y, Player);
         }
     }
 
