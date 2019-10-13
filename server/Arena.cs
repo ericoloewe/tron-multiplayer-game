@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace server
 {
@@ -19,9 +20,16 @@ namespace server
             }
         }
 
-        internal void AddPlayer(Player player)
+        public void AddPlayer(Player player)
         {
             players.Add(player);
+        }
+
+        public void Move(Player player)
+        {
+            Point point = player.Point;
+
+            matrix[point.X][point.Y] = point;
         }
     }
 }

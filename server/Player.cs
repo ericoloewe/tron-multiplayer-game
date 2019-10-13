@@ -5,31 +5,33 @@ namespace server
 {
     class Player
     {
-        public IList<Point> Trace { get; private set; }
+        public IList<Point> Trace { get; private set; } = new List<Point>();
         public Point Point { get; private set; }
         public string Name { get; }
         private Arena arena;
 
-        internal Player(string playerName, Arena arena)
+        public Player(string playerName, Arena arena)
         {
             Name = playerName;
-            Point = new Point();
+            Point = new Point(this);
             this.arena = arena;
             arena.AddPlayer(this);
         }
 
-        internal void Exit()
+        public void Exit()
         {
             throw new NotImplementedException();
         }
 
-        internal string GetScreenAsString()
+        public string GetScreenAsString()
         {
             throw new NotImplementedException();
         }
 
-        internal void Move(MovementDirection direction)
+        public void Move(MovementDirection direction)
         {
+            Trace.Add(Point);
+
             if (direction == MovementDirection.DOWN && Point.Y < arena.Height)
             {
                 Point.Y++;
@@ -46,6 +48,8 @@ namespace server
             {
                 Point.Y--;
             }
+
+            arena.Move(this);
         }
     }
 
@@ -53,6 +57,17 @@ namespace server
     {
         public int X { get; set; }
         public int Y { get; set; }
+        public Player Player { get; }
+
+        public Point(Player player)
+        {
+            Player = player;
+        }
+
+        public bool IsTrace()
+        {
+            return this == Player.Point;
+        }
     }
 
     enum MovementDirection
