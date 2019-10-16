@@ -14,7 +14,7 @@ namespace game
     {
         private readonly int Width = 400;
         private readonly int Height = 400;
-        private readonly int ArenaBorder = 20;
+        private readonly int ArenaBorder = 30;
         private GameClient client = new GameClient();
 
         public Form1()
@@ -22,9 +22,14 @@ namespace game
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, System.EventArgs e)
+        private void connectButton_Click(object sender, System.EventArgs e)
         {
             client.Connect();
+        }
+
+        private void startButton_Click(object sender, System.EventArgs e)
+        {
+            client.StartGame(nomeTextBox.Text);
         }
 
         private void arena_Paint(object sender, PaintEventArgs e)
@@ -33,19 +38,22 @@ namespace game
             // paint it when the Form is repainted.
             base.OnPaint(e);
 
-            for (int i = 0; i < client.Screen.Length; i++)
+            if (client.Screen != null)
             {
-                var row = client.Screen[i];
-
-                for (int j = 0; j < row.Length; j++)
+                for (int i = 0; i < client.Screen.Length; i++)
                 {
-                    Point point = row[j];
+                    var row = client.Screen[i];
 
-                    if (point != null)
+                    for (int j = 0; j < row.Length; j++)
                     {
-                        using (Pen pen = new Pen(Color.Black))
+                        Point point = row[j];
+
+                        if (point != null)
                         {
-                            e.Graphics.DrawLine(pen, i, j, i + 10, j + 10);
+                            using (Pen pen = new Pen(Color.Black))
+                            {
+                                e.Graphics.DrawLine(pen, i, j, i + 10, j + 10);
+                            }
                         }
                     }
                 }
