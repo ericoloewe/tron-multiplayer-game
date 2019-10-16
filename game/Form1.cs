@@ -29,7 +29,14 @@ namespace game
 
         private void startButton_Click(object sender, System.EventArgs e)
         {
-            client.StartGame(nomeTextBox.Text);
+            try
+            {
+                client.StartGame(nomeTextBox.Text);
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("You have to connect first!");
+            }
         }
 
         private void arena_Paint(object sender, PaintEventArgs e)

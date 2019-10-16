@@ -16,6 +16,7 @@ namespace server
             {
                 player = new Player(playerName, arena);
                 this.socket = socket;
+                SendScreen();
                 StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
             }
 
@@ -35,8 +36,7 @@ namespace server
                         try
                         {
                             ProcessCommand(command);
-                            string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}\n";
-                            socket.Send(Encoding.UTF8.GetBytes(screen));
+                            SendScreen();
                         }
                         catch (Exception ex)
                         {
@@ -54,6 +54,12 @@ namespace server
                 task.Start();
 
                 await task;
+            }
+
+            private void SendScreen()
+            {
+                string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}\n";
+                socket.Send(Encoding.UTF8.GetBytes(screen));
             }
 
             private void ProcessCommand(string command)

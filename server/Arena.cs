@@ -36,9 +36,9 @@ namespace server
 
         public override string ToString()
         {
-            var colums = matrix.Select(m => $"[{string.Join(",", m.ToList())}]").ToArray();
+            var colums = matrix.Select(m => $"{string.Join(",", m.ToList())}").ToArray();
 
-            return $"[{string.Join(",", colums)}]";
+            return $"{string.Join("\n", colums)}";
         }
     }
 }
