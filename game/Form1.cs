@@ -20,6 +20,7 @@ namespace game
         public Form1()
         {
             InitializeComponent();
+            client.OnScreenChange = () => Invalidate();
         }
 
         private void connectButton_Click(object sender, System.EventArgs e)

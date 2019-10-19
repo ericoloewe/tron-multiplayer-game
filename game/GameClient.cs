@@ -7,10 +7,12 @@ namespace game
 {
     class GameClient
     {
-        private readonly int serverPort = 8080;
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
-        public Socket sender;
+        public Action OnScreenChange { private get; set; }
+
+        private readonly int serverPort = 8080;
+        private Socket sender;
 
         internal void Connect()
         {
@@ -58,6 +60,8 @@ namespace game
                     Screen[i][j] = Point.FromText(columns[j].Replace("SCREEN: ", ""));
                 }
             }
+
+            OnScreenChange.Invoke();
         }
 
         private void ResetScreen(int size)
