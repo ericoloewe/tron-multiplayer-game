@@ -61,7 +61,7 @@ namespace game
             this.menu.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.menu.Location = new System.Drawing.Point(0, 0);
             this.menu.Name = "menu";
-            this.menu.Size = new System.Drawing.Size(Width, ArenaBorder);
+            this.menu.Size = new System.Drawing.Size(FormWidth, ArenaBorder);
             this.menu.TabIndex = 10;
             this.menu.TabStop = false;
 
@@ -115,7 +115,7 @@ namespace game
             this.components = new System.ComponentModel.Container();
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(Width, Height);
+            this.ClientSize = new System.Drawing.Size(FormWidth, FormHeight);
             this.Text = "Multiplayer game";
             this.Controls.Add(this.arena);
             this.Controls.Add(this.menu);

@@ -12,11 +12,11 @@ namespace game
 {
     public partial class Form1 : Form
     {
-        private static readonly int Width = 400;
-        private static readonly int Height = 400;
+        private static readonly int FormWidth = 400;
+        private static readonly int FormHeight = 400;
         private static readonly int ArenaBorder = 30;
-        private static readonly int ArenaHeight = Height - ArenaBorder;
-        private static readonly int ArenaWidth = Width;
+        private static readonly int ArenaHeight = FormHeight - ArenaBorder;
+        private static readonly int ArenaWidth = FormWidth;
         private GameClient client = new GameClient();
 
         private readonly string[] ALLOWED_KEYS = new string[4] { "right", "left", "up", "down" };
