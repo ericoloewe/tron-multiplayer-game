@@ -17,15 +17,33 @@ namespace game
         private readonly int ArenaBorder = 30;
         private GameClient client = new GameClient();
 
+        private readonly string[] ALLOWED_KEYS = new string[4] { "right", "left", "up", "down" };
+
         public Form1()
         {
             InitializeComponent();
-            client.OnScreenChange = () => Invalidate();
+            client.OnScreenChange = () => arena.Invalidate();
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            var parsedPressedKey = keyData.ToString().ToLower();
+            var isGameCommand = client.HasStarted && ALLOWED_KEYS.Any(ak => ak == parsedPressedKey);
+
+            if (isGameCommand)
+            {
+                client.Move(parsedPressedKey);
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         private void connectButton_Click(object sender, System.EventArgs e)
         {
             client.Connect();
+            nomeTextBox.Enabled = true;
+            startButton.Enabled = true;
+            connectButton.Enabled = false;
         }
 
         private void startButton_Click(object sender, System.EventArgs e)
@@ -37,6 +55,10 @@ namespace game
             catch (InvalidOperationException)
             {
                 MessageBox.Show("You have to connect first!");
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show("You have to fill your name first!");
             }
         }
 
@@ -60,7 +82,7 @@ namespace game
                         {
                             using (Pen pen = new Pen(Color.Black))
                             {
-                                e.Graphics.DrawLine(pen, i, j, i + 10, j + 10);
+                                e.Graphics.DrawLine(pen, i, j, i * 2, j * 2);
                             }
                         }
                     }

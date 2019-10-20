@@ -83,6 +83,7 @@ namespace game
             this.nomeTextBox.Name = "nomeTextBox";
             this.nomeTextBox.Size = new System.Drawing.Size(50, ArenaBorder);
             this.nomeTextBox.TabIndex = 7;
+            this.nomeTextBox.Enabled = false;
 
             // 
             // startButton
@@ -94,6 +95,7 @@ namespace game
             this.startButton.TabIndex = 8;
             this.startButton.Text = "Start";
             this.startButton.Click += new EventHandler(this.startButton_Click);
+            this.startButton.Enabled = false;
 
             // 
             // connectButton

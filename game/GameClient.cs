@@ -10,6 +10,7 @@ namespace game
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
         public Action OnScreenChange { private get; set; }
+        public bool HasStarted { get; private set; }
 
         private readonly int serverPort = 8080;
         private Socket sender;
@@ -29,12 +30,28 @@ namespace game
             {
                 throw new InvalidOperationException("You have to connect first!");
             }
+            else if (string.IsNullOrEmpty(playerName))
+            {
+                throw new ArgumentException("Yout have to fill your name first!");
+            }
             else
             {
                 PlayerName = playerName;
                 sender.Send(Encoding.ASCII.GetBytes(playerName));
                 ReceiveAndFormScreen(true);
+                HasStarted = true;
             }
+        }
+
+        internal void Move(string pressedKey)
+        {
+            if (!HasStarted)
+            {
+                throw new InvalidOperationException("You have to start first!");
+            }
+
+            sender.Send(Encoding.ASCII.GetBytes($"move: {pressedKey.ToLower()}"));
+            ReceiveAndFormScreen();
         }
 
         private void ReceiveAndFormScreen(bool? forceReset = false)
@@ -92,7 +109,7 @@ namespace game
 
         internal static Point FromText(string pointInfo)
         {
-            var point = new Point();
+            Point point = null;
 
             if (pointInfo.Trim().Length != 0)
             {
