@@ -46,7 +46,7 @@ namespace game
             this.arena.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.arena.Location = new System.Drawing.Point(0, ArenaBorder);
             this.arena.Name = "arena";
-            this.arena.Size = new System.Drawing.Size(Width, Height - ArenaBorder);
+            this.arena.Size = new System.Drawing.Size(ArenaWidth, ArenaHeight);
             this.arena.TabIndex = 11;
             this.arena.TabStop = false;
             this.arena.Paint += new System.Windows.Forms.PaintEventHandler(this.arena_Paint);

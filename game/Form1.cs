@@ -12,9 +12,11 @@ namespace game
 {
     public partial class Form1 : Form
     {
-        private readonly int Width = 400;
-        private readonly int Height = 400;
-        private readonly int ArenaBorder = 30;
+        private static readonly int Width = 400;
+        private static readonly int Height = 400;
+        private static readonly int ArenaBorder = 30;
+        private static readonly int ArenaHeight = Height - ArenaBorder;
+        private static readonly int ArenaWidth = Width;
         private GameClient client = new GameClient();
 
         private readonly string[] ALLOWED_KEYS = new string[4] { "right", "left", "up", "down" };
@@ -73,16 +75,21 @@ namespace game
                 for (int i = 0; i < client.Screen.Length; i++)
                 {
                     var row = client.Screen[i];
+                    var xSize = ArenaWidth / client.Screen.Length;
+                    var x = i * xSize;
 
                     for (int j = 0; j < row.Length; j++)
                     {
                         Point point = row[j];
+                        var ySize = ArenaHeight / row.Length;
+                        var y = i * ySize;
 
                         if (point != null)
                         {
-                            using (Pen pen = new Pen(Color.Black))
+                            using (SolidBrush myBrush = new SolidBrush(Color.Black))
                             {
-                                e.Graphics.DrawLine(pen, i, j, i * 2, j * 2);
+
+                                e.Graphics.FillRectangle(myBrush, x, y, xSize, ySize);
                             }
                         }
                     }

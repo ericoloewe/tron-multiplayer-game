@@ -97,10 +97,6 @@ namespace game
         public string PlayerName { get; }
         public PointType Type { get; }
 
-        private Point()
-        {
-        }
-
         private Point(string playerName, string type)
         {
             PlayerName = playerName;
@@ -111,7 +107,7 @@ namespace game
         {
             Point point = null;
 
-            if (pointInfo.Trim().Length != 0)
+            if (pointInfo.Trim().Length > 0)
             {
                 string[] info = pointInfo.Split(";");
 
