@@ -11,7 +11,6 @@ namespace server
     partial class Server
     {
         private Arena arena;
-        private const int MAX_PLAYERS_IN_THE_GAME = 4;
         private IList<PlayerConnection> players = new List<PlayerConnection>();
         private int port;
         private Socket listener;
@@ -52,7 +51,7 @@ namespace server
 
             Console.WriteLine("Nome jogador: {0}", playerName);
 
-            if (players.Count == MAX_PLAYERS_IN_THE_GAME)
+            if (players.Count == Arena.MAX_PLAYERS_IN_THE_GAME)
             {
                 handler.Send(Encoding.UTF8.GetBytes("The game is already full\n"));
                 handler.Shutdown(SocketShutdown.Both);
