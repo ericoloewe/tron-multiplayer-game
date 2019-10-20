@@ -10,7 +10,7 @@ namespace server
         public string Name { get; }
 
         private Arena arena;
-        private MovementDirection lastDirection;
+        private MovementDirection? lastDirection;
 
         public Player(string playerName, Arena arena)
         {
@@ -69,7 +69,7 @@ namespace server
 
             if (lastDirection != null)
             {
-                nextDirection = lastDirection;
+                nextDirection = lastDirection.Value;
             }
 
             return nextDirection;

@@ -61,6 +61,7 @@ namespace server
             private void SendScreen()
             {
                 string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}\n";
+
                 socket.Send(Encoding.UTF8.GetBytes(screen));
             }
 
