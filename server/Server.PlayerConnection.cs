@@ -11,9 +11,11 @@ namespace server
         {
             private Socket socket;
             private Player player;
+            private Arena arena;
 
             public PlayerConnection(string playerName, Arena arena, Socket socket)
             {
+                this.arena = arena;
                 player = new Player(playerName, arena);
                 this.socket = socket;
                 SendScreen();
@@ -82,6 +84,10 @@ namespace server
                 else if (parsedCommand.StartsWith(GameCommands.EXIT.ToString()))
                 {
                     player.Exit();
+                }
+                else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
+                {
+                    arena.Start().ContinueWith(t => Console.WriteLine("The game was stopped"));
                 }
                 else
                 {

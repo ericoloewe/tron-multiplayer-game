@@ -80,8 +80,9 @@ namespace server
     {
         EXIT,
         MOVE,
-        SCREEN,
         READY,
+        SCREEN,
+        START,
     }
 }
 

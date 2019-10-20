@@ -8,7 +8,9 @@ namespace server
         public IList<Point> Trace { get; private set; } = new List<Point>();
         public Point Position { get; private set; }
         public string Name { get; }
+
         private Arena arena;
+        private MovementDirection lastDirection;
 
         public Player(string playerName, Arena arena)
         {
@@ -16,12 +18,11 @@ namespace server
             Position = new Point(0, 0, this);
             this.arena = arena;
             arena.AddPlayer(this);
-            arena.Move(this);
         }
 
         public void Exit()
         {
-            throw new NotImplementedException();
+            arena.Remove(this);
         }
 
         public string GetScreenAsString()
@@ -29,8 +30,14 @@ namespace server
             return arena.ToString();
         }
 
+        public void Move()
+        {
+            Move(GetNextDefaultDirection());
+        }
+
         public void Move(MovementDirection direction)
         {
+            lastDirection = direction;
             Trace.Add(Position);
 
             Point nextPoint = (Point)Position.Clone();
@@ -54,6 +61,18 @@ namespace server
 
             Position = nextPoint;
             arena.Move(this);
+        }
+
+        private MovementDirection GetNextDefaultDirection()
+        {
+            var nextDirection = MovementDirection.DOWN;
+
+            if (lastDirection != null)
+            {
+                nextDirection = lastDirection;
+            }
+
+            return nextDirection;
         }
     }
 
