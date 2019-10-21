@@ -45,7 +45,7 @@ namespace server
 
             var bytes = new byte[1024];
 
-            // Receive the response from the remote device.  
+            handler.Send(Encoding.UTF8.GetBytes("Bem vindo ao jogo, digite seu nome: \n"));
             var bytesRec = handler.Receive(bytes);
             var playerName = Encoding.UTF8.GetString(bytes, 0, bytesRec);
 
