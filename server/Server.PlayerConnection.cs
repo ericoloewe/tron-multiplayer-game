@@ -38,7 +38,6 @@ namespace server
                         try
                         {
                             ProcessCommand(command);
-                            SendScreen();
                         }
                         catch (Exception ex)
                         {
@@ -60,7 +59,7 @@ namespace server
 
             private void SendScreen()
             {
-                string screen = $"{GameCommands.SCREEN}: {player.GetScreenAsString()}\n";
+                string screen = $"{player.GetScreenAsString()}\n";
 
                 socket.Send(Encoding.UTF8.GetBytes(screen));
             }
@@ -89,6 +88,10 @@ namespace server
                 else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
                 {
                     arena.Start().ContinueWith(t => Console.WriteLine("The game was stopped"));
+                }
+                else if (parsedCommand.StartsWith(GameCommands.SCREEN.ToString()))
+                {
+                    SendScreen();
                 }
                 else
                 {

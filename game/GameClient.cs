@@ -71,6 +71,8 @@ namespace game
 
         private void ReceiveAndFormScreen(bool? forceReset = false)
         {
+            sender.Send(Encoding.ASCII.GetBytes($"screen"));
+
             var bytes = new byte[10240];
             var bytesRec = sender.Receive(bytes);
 
@@ -89,7 +91,7 @@ namespace game
 
                 for (int j = 0; j < columns.Length; j++)
                 {
-                    Screen[i][j] = Point.FromText(columns[j].Replace("SCREEN: ", ""));
+                    Screen[i][j] = Point.FromText(columns[j]);
                 }
             }
 
