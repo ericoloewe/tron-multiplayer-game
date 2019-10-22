@@ -84,7 +84,7 @@ namespace game
                     {
                         Point point = row[j];
                         var ySize = ArenaHeight / row.Length;
-                        var y = i * ySize;
+                        var y = j * ySize;
 
                         if (point != null)
                         {
