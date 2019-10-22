@@ -37,6 +37,7 @@ namespace game
             this.nomeTextBox = new System.Windows.Forms.TextBox();
             this.startButton = new System.Windows.Forms.Button();
             this.connectButton = new System.Windows.Forms.Button();
+            this.readyButton = new System.Windows.Forms.Button();
             this.arena.SuspendLayout();
             this.menu.SuspendLayout();
             this.SuspendLayout();
@@ -56,6 +57,7 @@ namespace game
             // 
             this.menu.Controls.Add(this.nomeLabel);
             this.menu.Controls.Add(this.nomeTextBox);
+            this.menu.Controls.Add(this.readyButton);
             this.menu.Controls.Add(this.startButton);
             this.menu.Controls.Add(this.connectButton);
             this.menu.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -86,13 +88,25 @@ namespace game
             this.nomeTextBox.Enabled = false;
 
             // 
+            // readyButton
+            // 
+            this.readyButton.AutoSize = true;
+            this.readyButton.Location = new System.Drawing.Point(120, 0);
+            this.readyButton.Name = "readyButton";
+            this.readyButton.Size = new System.Drawing.Size(50, ArenaBorder);
+            this.readyButton.TabIndex = 8;
+            this.readyButton.Text = "Ready";
+            this.readyButton.Click += new EventHandler(this.readyButton_Click);
+            this.readyButton.Enabled = false;
+
+            // 
             // startButton
             // 
             this.startButton.AutoSize = true;
-            this.startButton.Location = new System.Drawing.Point(120, 0);
+            this.startButton.Location = new System.Drawing.Point(180, 0);
             this.startButton.Name = "startButton";
             this.startButton.Size = new System.Drawing.Size(50, ArenaBorder);
-            this.startButton.TabIndex = 8;
+            this.startButton.TabIndex = 9;
             this.startButton.Text = "Start";
             this.startButton.Click += new EventHandler(this.startButton_Click);
             this.startButton.Enabled = false;
@@ -101,10 +115,10 @@ namespace game
             // connectButton
             // 
             this.connectButton.AutoSize = true;
-            this.connectButton.Location = new System.Drawing.Point(180, 0);
+            this.connectButton.Location = new System.Drawing.Point(240, 0);
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(50, ArenaBorder);
-            this.connectButton.TabIndex = 9;
+            this.connectButton.TabIndex = 10;
             this.connectButton.Text = "Connect";
             this.connectButton.Click += new EventHandler(this.connectButton_Click);
 
@@ -133,6 +147,7 @@ namespace game
         private System.Windows.Forms.GroupBox menu;
         private System.Windows.Forms.TextBox nomeTextBox;
         private System.Windows.Forms.Label nomeLabel;
+        private System.Windows.Forms.Button readyButton;
         private System.Windows.Forms.Button startButton;
         private System.Windows.Forms.Button connectButton;
     }

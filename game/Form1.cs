@@ -44,26 +44,29 @@ namespace game
         {
             client.Connect();
             nomeTextBox.Enabled = true;
-            startButton.Enabled = true;
+            readyButton.Enabled = true;
             connectButton.Enabled = false;
         }
 
-        private void startButton_Click(object sender, System.EventArgs e)
+        private void readyButton_Click(object sender, System.EventArgs e)
         {
             try
             {
                 nomeTextBox.Enabled = false;
-                startButton.Enabled = false;
-                client.StartGame(nomeTextBox.Text);
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("You have to connect first!");
+                readyButton.Enabled = false;
+                startButton.Enabled = true;
+                client.Ready(nomeTextBox.Text);
             }
             catch (ArgumentException)
             {
                 MessageBox.Show("You have to fill your name first!");
             }
+        }
+
+        private void startButton_Click(object sender, System.EventArgs e)
+        {
+            startButton.Enabled = false;
+            client.StartGame();
         }
 
         private void arena_Paint(object sender, PaintEventArgs e)

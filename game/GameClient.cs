@@ -2,16 +2,19 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace game
 {
     class GameClient
     {
+        private static readonly int TIME_TO_UPDATE_SCREEN_IN_MS = 500;
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
         public Action OnScreenChange { private get; set; }
         public Action<string> OnConnect { private get; set; }
         public bool HasStarted { get; private set; }
+        public bool HasFinished { get; private set; } = false;
 
         private readonly int serverPort = 8080;
         private Socket sender;
@@ -39,13 +42,15 @@ namespace game
             }
         }
 
-        internal void StartGame(string playerName)
+        internal void StartGame()
         {
-            if (sender == null)
-            {
-                throw new InvalidOperationException("You have to connect first!");
-            }
-            else if (string.IsNullOrEmpty(playerName))
+            sender.Send(Encoding.ASCII.GetBytes("start"));
+            HasStarted = true;
+        }
+
+        internal void Ready(string playerName)
+        {
+            if (string.IsNullOrEmpty(playerName))
             {
                 throw new ArgumentException("Yout have to fill your name first!");
             }
@@ -53,9 +58,28 @@ namespace game
             {
                 PlayerName = playerName;
                 sender.Send(Encoding.ASCII.GetBytes(playerName));
-                ReceiveAndFormScreen(true);
-                HasStarted = true;
+                StartScreenCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
             }
+        }
+
+        private async Task StartScreenCycle()
+        {
+            var task = new Task(() =>
+            {
+                while (!HasFinished)
+                {
+                    lock (sender)
+                    {
+                        ReceiveAndFormScreen();
+                    }
+
+                    System.Threading.Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
+                }
+            });
+
+            task.Start();
+
+            await task;
         }
 
         internal void Move(string pressedKey)
