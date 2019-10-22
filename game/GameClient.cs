@@ -10,6 +10,7 @@ namespace game
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
         public Action OnScreenChange { private get; set; }
+        public Action<string> OnConnect { private get; set; }
         public bool HasStarted { get; private set; }
 
         private readonly int serverPort = 8080;
@@ -22,6 +23,20 @@ namespace game
             sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             sender.Connect(endpoint);
+            ReceiveWelcomeMessage();
+        }
+
+        private void ReceiveWelcomeMessage()
+        {
+            var bytes = new byte[1024];
+            var bytesRec = sender.Receive(bytes);
+
+            if (OnConnect != null)
+            {
+                var message = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+
+                OnConnect.Invoke(message);
+            }
         }
 
         internal void StartGame(string playerName)

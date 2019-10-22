@@ -52,6 +52,8 @@ namespace game
         {
             try
             {
+                nomeTextBox.Enabled = false;
+                startButton.Enabled = false;
                 client.StartGame(nomeTextBox.Text);
             }
             catch (InvalidOperationException)
