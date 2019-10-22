@@ -42,19 +42,19 @@ namespace server
                     }
                 case 1:
                     {
-                        player.Position.X = Width;
-                        player.Position.Y = Height;
+                        player.Position.X = Width - 1;
+                        player.Position.Y = Height - 1;
                         break;
                     }
                 case 2:
                     {
                         player.Position.X = 0;
-                        player.Position.Y = Height;
+                        player.Position.Y = Height - 1;
                         break;
                     }
                 case 4:
                     {
-                        player.Position.X = Width;
+                        player.Position.X = Width - 1;
                         player.Position.Y = 0;
                         break;
                     }
