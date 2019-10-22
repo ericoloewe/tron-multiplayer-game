@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace game
@@ -73,12 +74,11 @@ namespace game
                         ReceiveAndFormScreen();
                     }
 
-                    System.Threading.Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
+                    Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
                 }
             });
 
             task.Start();
-
             await task;
         }
 

@@ -53,7 +53,6 @@ namespace server
                 });
 
                 task.Start();
-
                 await task;
             }
 

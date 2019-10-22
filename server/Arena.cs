@@ -10,7 +10,7 @@ namespace server
     class Arena
     {
         public static readonly int MAX_PLAYERS_IN_THE_GAME = 4;
-        private readonly int cicleTime = 1000;
+        private readonly int cicleTime = 500;
 
         public int Width { get; } = 80;
         public int Height { get; } = 80;

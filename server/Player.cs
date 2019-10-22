@@ -71,6 +71,10 @@ namespace server
             {
                 nextDirection = lastDirection.Value;
             }
+            else if (Position.Y == arena.Height)
+            {
+                nextDirection = MovementDirection.UP;
+            }
 
             return nextDirection;
         }
