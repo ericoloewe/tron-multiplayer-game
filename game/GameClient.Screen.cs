@@ -1,5 +1,4 @@
-﻿using System.Text;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace game
@@ -12,11 +11,7 @@ namespace game
             {
                 while (!HasFinished)
                 {
-                    lock (sender)
-                    {
-                        ReceiveAndFormScreen();
-                    }
-
+                    ReceiveAndFormScreen();
                     Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
                 }
             });
@@ -27,12 +22,9 @@ namespace game
 
         void ReceiveAndFormScreen(bool? forceReset = false)
         {
-            sender.Send(Encoding.ASCII.GetBytes($"screen"));
+            clientConnection.Send($"screen");
 
-            var bytes = new byte[10240];
-            var bytesRec = sender.Receive(bytes);
-
-            var screenStr = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+            var screenStr = clientConnection.Receive();
 
             string[] rows = screenStr.Split("\n");
 

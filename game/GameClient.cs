@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
 
 namespace game
 {
@@ -15,38 +12,28 @@ namespace game
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; } = false;
 
-        private readonly int serverPort = 8080;
-        private Socket sender;
+        private GameClientConnection clientConnection;
 
         internal void Connect()
         {
-            var ipAddress = IPAddress.Parse("127.0.0.1");
-            var endpoint = new IPEndPoint(ipAddress, serverPort);
-            sender = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            sender.Connect(endpoint);
+            clientConnection = new GameClientConnection();
             ReceiveWelcomeMessage();
         }
 
         private void ReceiveWelcomeMessage()
         {
-            var bytes = new byte[1024];
-            var bytesRec = sender.Receive(bytes);
+            var message = clientConnection.Receive();
 
             if (OnConnect != null)
             {
-                var message = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
                 OnConnect.Invoke(message);
             }
         }
 
         internal void StartGame()
         {
-            sender.Send(Encoding.ASCII.GetBytes("start"));
-            var bytes = new byte[10240];
-            var bytesRec = sender.Receive(bytes);
-            var errorMessage = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+            clientConnection.Send("start");
+            var errorMessage = clientConnection.Receive();
 
             if (string.IsNullOrEmpty(errorMessage))
             {
@@ -67,7 +54,7 @@ namespace game
             else
             {
                 PlayerName = playerName;
-                sender.Send(Encoding.ASCII.GetBytes(playerName));
+                clientConnection.Send(playerName);
                 StartScreenCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
             }
         }
@@ -79,7 +66,7 @@ namespace game
                 throw new InvalidOperationException("You have to start first!");
             }
 
-            sender.Send(Encoding.ASCII.GetBytes($"move: {pressedKey.ToLower()}"));
+            clientConnection.Send($"move: {pressedKey.ToLower()}");
             ReceiveAndFormScreen();
         }
     }
