@@ -18,7 +18,6 @@ namespace server
                 this.arena = arena;
                 player = new Player(playerName, arena);
                 this.socket = socket;
-                SendScreen();
                 StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
             }
 
