@@ -2,12 +2,10 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace game
 {
-    class GameClient
+    partial class GameClient
     {
         private static readonly int TIME_TO_UPDATE_SCREEN_IN_MS = 500;
         public Point[][] Screen { get; private set; }
@@ -46,7 +44,18 @@ namespace game
         internal void StartGame()
         {
             sender.Send(Encoding.ASCII.GetBytes("start"));
-            HasStarted = true;
+            var bytes = new byte[10240];
+            var bytesRec = sender.Receive(bytes);
+            var errorMessage = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+
+            if (string.IsNullOrEmpty(errorMessage))
+            {
+                Console.WriteLine($"There is an error to start {errorMessage}");
+            }
+            else
+            {
+                HasStarted = true;
+            }
         }
 
         internal void Ready(string playerName)
@@ -63,25 +72,6 @@ namespace game
             }
         }
 
-        private async Task StartScreenCycle()
-        {
-            var task = new Task(() =>
-            {
-                while (!HasFinished)
-                {
-                    lock (sender)
-                    {
-                        ReceiveAndFormScreen();
-                    }
-
-                    Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
-                }
-            });
-
-            task.Start();
-            await task;
-        }
-
         internal void Move(string pressedKey)
         {
             if (!HasStarted)
@@ -92,76 +82,5 @@ namespace game
             sender.Send(Encoding.ASCII.GetBytes($"move: {pressedKey.ToLower()}"));
             ReceiveAndFormScreen();
         }
-
-        private void ReceiveAndFormScreen(bool? forceReset = false)
-        {
-            sender.Send(Encoding.ASCII.GetBytes($"screen"));
-
-            var bytes = new byte[10240];
-            var bytesRec = sender.Receive(bytes);
-
-            var screenStr = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
-            string[] rows = screenStr.Split("\n");
-
-            if (forceReset.HasValue)
-            {
-                ResetScreen(rows.Length);
-            }
-
-            for (int i = 0; i < rows.Length; i++)
-            {
-                string[] columns = rows[i].Split(",");
-
-                for (int j = 0; j < columns.Length; j++)
-                {
-                    Screen[i][j] = Point.FromText(columns[j]);
-                }
-            }
-
-            OnScreenChange.Invoke();
-        }
-
-        private void ResetScreen(int size)
-        {
-            Screen = new Point[size][];
-
-            for (int i = 0; i < size; i++)
-            {
-                Screen[i] = new Point[size];
-            }
-        }
-    }
-
-    class Point
-    {
-        public string PlayerName { get; }
-        public PointType Type { get; }
-
-        private Point(string playerName, string type)
-        {
-            PlayerName = playerName;
-            Type = (PointType)Enum.Parse(typeof(PointType), type, true);
-        }
-
-        internal static Point FromText(string pointInfo)
-        {
-            Point point = null;
-
-            if (pointInfo.Trim().Length > 0)
-            {
-                string[] info = pointInfo.Split(";");
-
-                point = new Point(info[1], info[0]);
-            }
-
-            return point;
-        }
-    }
-
-    enum PointType
-    {
-        PLAYER,
-        TRACE
     }
 }
