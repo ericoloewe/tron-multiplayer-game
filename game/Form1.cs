@@ -91,10 +91,19 @@ namespace game
 
                         if (point != null)
                         {
-                            using (SolidBrush myBrush = new SolidBrush(Color.Black))
+                            if (point.Type == PointType.PLAYER)
                             {
-
-                                e.Graphics.FillRectangle(myBrush, x, y, xSize, ySize);
+                                using (SolidBrush myBrush = new SolidBrush(Color.Black))
+                                {
+                                    e.Graphics.FillRectangle(myBrush, x, y, xSize, ySize);
+                                }
+                            }
+                            else
+                            {
+                                using (SolidBrush myBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 30)))
+                                {
+                                    e.Graphics.FillRectangle(myBrush, x, y, xSize, ySize);
+                                }
                             }
                         }
                     }
