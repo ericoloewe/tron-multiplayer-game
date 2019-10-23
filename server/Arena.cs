@@ -16,6 +16,7 @@ namespace server
         public int Height { get; } = 80;
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; }
+        public bool CanStart { get { return players.Count >= 2; } }
 
         private IList<Player> players = new List<Player>();
         private Point[][] matrix;

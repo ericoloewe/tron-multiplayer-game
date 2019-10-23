@@ -39,9 +39,12 @@ namespace server
                         {
                             ProcessCommand(command);
                         }
-                        catch (Exception ex)
+                        catch (ArgumentException)
                         {
                             socket.Send(Encoding.UTF8.GetBytes("invalid-command\n"));
+                        }
+                        catch (Exception ex)
+                        {
                             Console.Write("Stack: ");
                             Console.WriteLine(ex);
                         }
@@ -86,6 +89,11 @@ namespace server
                 }
                 else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
                 {
+                    if (!arena.CanStart)
+                    {
+                        throw new ArgumentException($"Can't start the game");
+                    }
+
                     arena.Start().ContinueWith(t => Console.WriteLine("The game was stopped"));
                 }
                 else if (parsedCommand.StartsWith(GameCommands.SCREEN.ToString()))
