@@ -1,108 +1,48 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace server
 {
     partial class Server
     {
-        class PlayerConnection
+        internal class PlayerConnection : IDisposable
         {
-            private Socket socket;
-            private Player player;
-            private Arena arena;
+            private Socket handler;
 
-            public PlayerConnection(string playerName, Arena arena, Socket socket)
+            internal PlayerConnection(Socket handler)
             {
-                this.arena = arena;
-                player = new Player(playerName, arena);
-                this.socket = socket;
-                StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
+                this.handler = handler;
             }
 
-            private async Task StartCycle()
+            internal string Receive()
             {
-                var task = new Task(() =>
+                string message;
+                int bytesRec;
+                var bytes = new byte[10240];
+
+                lock (handler)
                 {
-                    string command = "";
+                    bytesRec = handler.Receive(bytes);
+                }
 
-                    while (!command.ToLower().StartsWith("exit"))
-                    {
-                        var bytes = new byte[1024];
-                        var bytesRec = socket.Receive(bytes);
+                message = Encoding.UTF8.GetString(bytes, 0, bytesRec);
 
-                        command = Encoding.UTF8.GetString(bytes, 0, bytesRec);
-
-                        try
-                        {
-                            ProcessCommand(command);
-                        }
-                        catch (ArgumentException)
-                        {
-                            socket.Send(Encoding.UTF8.GetBytes("invalid-command\n"));
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.Write("Stack: ");
-                            Console.WriteLine(ex);
-                        }
-                    }
-
-                    socket.Send(Encoding.UTF8.GetBytes("goodbye\n"));
-                    socket.Shutdown(SocketShutdown.Both);
-                    socket.Close();
-                });
-
-                task.Start();
-                await task;
+                return message;
             }
 
-            private void SendScreen()
+            internal void Send(string message)
             {
-                string screen = $"{player.GetScreenAsString()}\n";
-
-                socket.Send(Encoding.UTF8.GetBytes(screen));
+                lock (handler)
+                {
+                    handler.Send(Encoding.ASCII.GetBytes(message));
+                }
             }
 
-            private void ProcessCommand(string command)
+            public void Dispose()
             {
-                var parsedCommand = command.ToUpper();
-
-                if (parsedCommand.StartsWith(GameCommands.MOVE.ToString()))
-                {
-                    string direction = command.Split(":")[1];
-
-                    if (direction == null)
-                    {
-                        throw new ArgumentException($"Invalid command: {command}");
-                    }
-
-                    MovementDirection parsedDirection = (MovementDirection)Enum.Parse(typeof(MovementDirection), direction.Trim(), true);
-
-                    player.Move(parsedDirection);
-                }
-                else if (parsedCommand.StartsWith(GameCommands.EXIT.ToString()))
-                {
-                    player.Exit();
-                }
-                else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
-                {
-                    if (!arena.CanStart)
-                    {
-                        throw new ArgumentException($"Can't start the game");
-                    }
-
-                    arena.Start().ContinueWith(t => Console.WriteLine("The game was stopped"));
-                }
-                else if (parsedCommand.StartsWith(GameCommands.SCREEN.ToString()))
-                {
-                    SendScreen();
-                }
-                else
-                {
-                    throw new ArgumentException($"Invalid command: {command}");
-                }
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
             }
         }
     }

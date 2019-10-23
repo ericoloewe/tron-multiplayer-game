@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace server
@@ -11,7 +9,7 @@ namespace server
     partial class Server
     {
         private Arena arena;
-        private IList<PlayerConnection> players = new List<PlayerConnection>();
+        private IList<PlayerProcessor> players = new List<PlayerProcessor>();
         private int port;
         private Socket listener;
 
@@ -41,25 +39,22 @@ namespace server
         private async Task AcceptPlayer()
         {
             Console.WriteLine("Start to accept player");
-            Socket handler = await listener.AcceptAsync();
+            var playerConnection = new PlayerConnection(await listener.AcceptAsync());
 
-            var bytes = new byte[1024];
+            playerConnection.Send("Bem vindo ao jogo, digite seu nome: \n");
 
-            handler.Send(Encoding.UTF8.GetBytes("Bem vindo ao jogo, digite seu nome: \n"));
-            var bytesRec = handler.Receive(bytes);
-            var playerName = Encoding.UTF8.GetString(bytes, 0, bytesRec);
+            var playerName = playerConnection.Receive();
 
             Console.WriteLine("Nome jogador: {0}", playerName);
 
             if (players.Count == Arena.MAX_PLAYERS_IN_THE_GAME)
             {
-                handler.Send(Encoding.UTF8.GetBytes("The game is already full\n"));
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+                playerConnection.Send("The game is already full\n");
+                playerConnection.Dispose();
             }
             else
             {
-                players.Add(new PlayerConnection(playerName, arena, handler));
+                players.Add(new PlayerProcessor(playerName, arena, playerConnection));
             }
         }
 
