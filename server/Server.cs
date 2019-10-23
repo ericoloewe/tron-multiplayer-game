@@ -54,7 +54,10 @@ namespace server
             }
             else
             {
-                players.Add(new PlayerProcessor(playerName, arena, playerConnection));
+                var player = new PlayerProcessor(playerName, arena, playerConnection);
+
+                player.OnStop = () => players.Remove(player);
+                players.Add(player);
             }
         }
 

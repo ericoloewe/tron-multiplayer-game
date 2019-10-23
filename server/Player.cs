@@ -11,6 +11,7 @@ namespace server
 
         private Arena arena;
         private MovementDirection? lastDirection;
+        private bool isDead;
 
         public Player(string playerName, Arena arena)
         {
@@ -20,9 +21,13 @@ namespace server
             arena.AddPlayer(this);
         }
 
-        public void Exit()
+        public void Die()
         {
-            arena.Remove(this);
+            if (!isDead)
+            {
+                arena.Remove(this);
+                isDead = true;
+            }
         }
 
         public string GetScreenAsString()

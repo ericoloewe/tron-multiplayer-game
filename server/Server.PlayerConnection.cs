@@ -8,6 +8,8 @@ namespace server
     {
         internal class PlayerConnection : IDisposable
         {
+            public bool IsConnected { get { return handler.Connected; } }
+
             private Socket handler;
 
             internal PlayerConnection(Socket handler)

@@ -10,13 +10,15 @@ namespace server
             private PlayerConnection connection;
             private Player player;
             private Arena arena;
+            public Action OnStop { private get; set; } = () => { };
 
             public PlayerProcessor(string playerName, Arena arena, PlayerConnection connection)
             {
                 this.arena = arena;
                 player = new Player(playerName, arena);
                 this.connection = connection;
-                StartCycle().ContinueWith(t => Console.WriteLine("Player died"));
+
+                StartCycle().ContinueWith(t => HandleGameStop());
             }
 
             private async Task StartCycle()
@@ -25,7 +27,7 @@ namespace server
                 {
                     string command = "";
 
-                    while (!command.ToLower().StartsWith("exit"))
+                    while (!command.ToLower().StartsWith("exit") || !connection.IsConnected)
                     {
                         command = connection.Receive();
 
@@ -79,7 +81,7 @@ namespace server
                 }
                 else if (parsedCommand.StartsWith(GameCommands.EXIT.ToString()))
                 {
-                    player.Exit();
+                    player.Die();
                 }
                 else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
                 {
@@ -88,7 +90,7 @@ namespace server
                         throw new ArgumentException($"Can't start the game");
                     }
 
-                    arena.Start().ContinueWith(t => Console.WriteLine("The game was stopped"));
+                    arena.Start().ContinueWith(t => HandleGameStop());
                 }
                 else if (parsedCommand.StartsWith(GameCommands.SCREEN.ToString()))
                 {
@@ -98,6 +100,13 @@ namespace server
                 {
                     throw new ArgumentException($"Invalid command: {command}");
                 }
+            }
+
+            private void HandleGameStop()
+            {
+                Console.WriteLine("The game was stopped");
+                OnStop.Invoke();
+                player.Die();
             }
         }
     }
