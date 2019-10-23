@@ -52,10 +52,10 @@ namespace game
         {
             try
             {
+                client.Ready(nomeTextBox.Text);
                 nomeTextBox.Enabled = false;
                 readyButton.Enabled = false;
                 startButton.Enabled = true;
-                client.Ready(nomeTextBox.Text);
             }
             catch (ArgumentException)
             {
@@ -65,8 +65,15 @@ namespace game
 
         private void startButton_Click(object sender, System.EventArgs e)
         {
-            startButton.Enabled = false;
-            client.StartGame();
+            try
+            {
+                client.StartGame();
+                startButton.Enabled = false;
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("The room must have 2 players or more!");
+            }
         }
 
         private void arena_Paint(object sender, PaintEventArgs e)

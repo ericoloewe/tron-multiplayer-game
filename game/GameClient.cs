@@ -35,9 +35,9 @@ namespace game
             clientConnection.Send("start");
             var errorMessage = clientConnection.Receive();
 
-            if (string.IsNullOrEmpty(errorMessage))
+            if (!string.IsNullOrEmpty(errorMessage))
             {
-                Console.WriteLine($"There is an error to start {errorMessage}");
+                throw new InvalidOperationException($"There is an error to start {errorMessage}");
             }
             else
             {
