@@ -35,8 +35,8 @@ namespace server
                         }
                         catch (ArgumentException)
                         {
-                            Console.Write("invalid-command of player");
-                            connection.Send("invalid-command\n");
+                            Console.WriteLine("invalid-command of player");
+                            connection.Send("invalid-command");
                         }
                         catch (Exception ex)
                         {
@@ -45,7 +45,7 @@ namespace server
                         }
                     }
 
-                    connection.Send("goodbye\n");
+                    connection.Send("goodbye");
                     connection.Dispose();
                 });
 
@@ -55,7 +55,7 @@ namespace server
 
             private void SendScreen()
             {
-                string screen = $"{player.GetScreenAsString()}\n";
+                var screen = player.GetScreenAsString();
 
                 connection.Send(screen);
             }

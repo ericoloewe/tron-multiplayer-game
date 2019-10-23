@@ -35,7 +35,7 @@ namespace server
             {
                 lock (handler)
                 {
-                    handler.Send(Encoding.ASCII.GetBytes(message));
+                    handler.Send(Encoding.ASCII.GetBytes($"{message}\n"));
                 }
             }
 

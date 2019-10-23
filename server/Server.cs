@@ -41,7 +41,7 @@ namespace server
             Console.WriteLine("Start to accept player");
             var playerConnection = new PlayerConnection(await listener.AcceptAsync());
 
-            playerConnection.Send("Bem vindo ao jogo, digite seu nome: \n");
+            playerConnection.Send("Bem vindo ao jogo, digite seu nome:");
 
             var playerName = playerConnection.Receive();
 
@@ -49,7 +49,7 @@ namespace server
 
             if (players.Count == Arena.MAX_PLAYERS_IN_THE_GAME)
             {
-                playerConnection.Send("The game is already full\n");
+                playerConnection.Send("The game is already full");
                 playerConnection.Dispose();
             }
             else
