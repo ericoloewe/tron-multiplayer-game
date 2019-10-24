@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,14 +9,15 @@ namespace server
     class Arena
     {
         public static readonly int MAX_PLAYERS_IN_THE_GAME = 4;
-        private readonly int cicleTime = 500;
 
+        public Action OnStop { private get; set; } = () => { };
         public int Width { get; } = 80;
         public int Height { get; } = 80;
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; }
         public bool CanStart { get { return players.Count >= 2; } }
 
+        private readonly int cicleTime = 500;
         private IList<Player> players = new List<Player>();
         private Point[][] matrix;
 
@@ -73,7 +73,7 @@ namespace server
         {
             if (HasStarted)
             {
-                Finish();
+                Stop();
             }
             else
             {
@@ -105,10 +105,10 @@ namespace server
             return $"{string.Join("\n", colums)}";
         }
 
-        private void Finish()
+        private void Stop()
         {
             HasFinished = true;
-            throw new NotImplementedException();
+            OnStop.Invoke();
         }
 
         private void KeepMovingPlayers()
@@ -124,7 +124,6 @@ namespace server
             while (!HasFinished)
             {
                 KeepMovingPlayers();
-
                 Thread.Sleep(cicleTime);
             }
         }

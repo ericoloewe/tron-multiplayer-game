@@ -17,7 +17,7 @@ namespace server
                 this.arena = arena;
                 player = new Player(playerName, arena);
                 this.connection = connection;
-
+                arena.OnStop = () => HandleGameStop();
                 StartCycle().ContinueWith(t => HandleGameStop());
             }
 
