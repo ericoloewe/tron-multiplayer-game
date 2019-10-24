@@ -33,23 +33,15 @@ namespace server
 
                     while (!command.ToLower().StartsWith("exit") || !connection.IsConnected)
                     {
-                        var response = "";
-
-                        command = connection.Receive();
-
                         try
                         {
-                            ProcessCommand(command);
-
-                            response = GetNextCommand();
+                            command = ProcessClientMessage();
                         }
-                        catch (ArgumentException)
+                        catch (Exception ex)
                         {
-                            Console.WriteLine("invalid-command of player");
-                            response = "invalid-command";
+                            Console.WriteLine("Stack");
+                            Console.WriteLine(ex);
                         }
-
-                        connection.Send(response);
                     }
 
                     connection.Send("goodbye");
@@ -58,6 +50,30 @@ namespace server
 
                 task.Start();
                 await task;
+            }
+
+            private string ProcessClientMessage()
+            {
+                string command;
+                var response = "";
+
+                command = connection.Receive();
+
+                try
+                {
+                    ProcessCommand(command);
+
+                    response = GetNextCommand();
+                }
+                catch (ArgumentException)
+                {
+                    Console.WriteLine("invalid-command of player");
+                    response = "invalid-command";
+                }
+
+                connection.Send(response);
+
+                return command;
             }
 
             private string GetNextCommand()

@@ -55,13 +55,17 @@ namespace game
         {
             var preparedMessage = message.ToLower();
 
-            if (preparedMessage.StartsWith("started"))
+            if (preparedMessage.Contains("started"))
             {
                 HasStarted = true;
             }
             else if (preparedMessage.StartsWith("bem vindo"))
             {
                 Console.WriteLine("Receive Bem vindo message");
+            }
+            else if (preparedMessage.StartsWith("invalid-command"))
+            {
+                Console.WriteLine("Comando invalido!");
             }
             else
             {

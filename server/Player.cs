@@ -107,7 +107,7 @@ namespace server
         {
             var playerOrTrace = IsTrace() ? "PLAYER" : "TRACE";
 
-            return $"{playerOrTrace};{Player.Name};{X};{Y}";
+            return $"{playerOrTrace};{Player.Name}";
         }
 
         public object Clone()
