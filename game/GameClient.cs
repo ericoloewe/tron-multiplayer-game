@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,54 +11,33 @@ namespace game
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
         public Action OnScreenChange { private get; set; }
-        public Action<string> OnConnect { private get; set; }
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; } = false;
 
         private GameClientConnection clientConnection;
+        private Queue<string> commands = new Queue<string>();
 
         internal void Connect()
         {
             clientConnection = new GameClientConnection();
-            ReceiveWelcomeMessage();
-        }
-
-        private void ReceiveWelcomeMessage()
-        {
-            var message = clientConnection.Receive();
-
-            if (OnConnect != null)
-            {
-                OnConnect.Invoke(message);
-            }
+            StartComunicationCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
         }
 
         internal void StartGame()
         {
-            clientConnection.Send("start");
-            var errorMessage = clientConnection.Receive();
-
-            if (!string.IsNullOrEmpty(errorMessage))
-            {
-                throw new InvalidOperationException($"There is an error to start {errorMessage}");
-            }
-            else
-            {
-                HasStarted = true;
-            }
+            commands.Enqueue("start");
         }
 
         internal void Ready(string playerName)
         {
             if (string.IsNullOrEmpty(playerName))
             {
-                throw new ArgumentException("Yout have to fill your name first!");
+                throw new ArgumentException("You have to fill your name first!");
             }
             else
             {
                 PlayerName = playerName;
-                clientConnection.Send(playerName);
-                StartComunicationCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
+                commands.Enqueue(playerName);
             }
         }
 
@@ -68,16 +48,20 @@ namespace game
                 throw new InvalidOperationException("You have to start first!");
             }
 
-            clientConnection.Send($"move: {pressedKey.ToLower()}");
+            commands.Enqueue($"move: {pressedKey.ToLower()}");
         }
 
         private void ProcessServerMessage(string message)
         {
             var preparedMessage = message.ToLower();
 
-            if (preparedMessage.StartsWith("start"))
+            if (preparedMessage.StartsWith("started"))
             {
                 HasStarted = true;
+            }
+            else if (preparedMessage.StartsWith("bem vindo"))
+            {
+                Console.WriteLine("Receive Bem vindo message");
             }
             else
             {
@@ -91,7 +75,8 @@ namespace game
             {
                 while (!HasFinished)
                 {
-                    clientConnection.Send($"screen");
+                    var nextCommand = GetNextCommand();
+                    clientConnection.Send(nextCommand);
 
                     var response = clientConnection.Receive();
 
@@ -102,6 +87,18 @@ namespace game
 
             task.Start();
             await task;
+        }
+
+        private string GetNextCommand()
+        {
+            var command = "screen";
+
+            if (commands.Count > 0)
+            {
+                command = commands.Dequeue();
+            }
+
+            return command;
         }
     }
 }

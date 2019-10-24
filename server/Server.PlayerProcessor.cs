@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace server
@@ -13,6 +14,7 @@ namespace server
             public Action OnStop { private get; set; } = () => { };
             public Action OnStart { get; internal set; }
             private bool wasStarted = false;
+            private Queue<string> commands = new Queue<string>();
 
             public PlayerProcessor(string playerName, Arena arena, PlayerConnection connection)
             {
@@ -31,22 +33,23 @@ namespace server
 
                     while (!command.ToLower().StartsWith("exit") || !connection.IsConnected)
                     {
+                        var response = "";
+
                         command = connection.Receive();
 
                         try
                         {
                             ProcessCommand(command);
+
+                            response = GetNextCommand();
                         }
                         catch (ArgumentException)
                         {
                             Console.WriteLine("invalid-command of player");
-                            connection.Send("invalid-command");
+                            response = "invalid-command";
                         }
-                        catch (Exception ex)
-                        {
-                            Console.Write("Stack: ");
-                            Console.WriteLine(ex);
-                        }
+
+                        connection.Send(response);
                     }
 
                     connection.Send("goodbye");
@@ -57,19 +60,35 @@ namespace server
                 await task;
             }
 
+            private string GetNextCommand()
+            {
+                var command = "";
+
+                if (commands.Count > 0)
+                {
+                    command = commands.Dequeue();
+                }
+
+                return command;
+            }
+
             internal void Start()
             {
+                var command = "already-started";
+
                 if (!wasStarted)
                 {
-                    connection.Send("start");
+                    command = "start";
                 }
+
+                commands.Enqueue(command);
             }
 
             private void SendScreen()
             {
                 var screen = player.GetScreenAsString();
 
-                connection.Send(screen);
+                commands.Enqueue(screen);
             }
 
             private void ProcessCommand(string command)
