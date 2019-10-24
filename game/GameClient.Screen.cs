@@ -1,25 +1,7 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-
-namespace game
+﻿namespace game
 {
     partial class GameClient
     {
-        async Task StartScreenCycle()
-        {
-            var task = new Task(() =>
-            {
-                while (!HasFinished)
-                {
-                    ReceiveAndFormScreen();
-                    Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
-                }
-            });
-
-            task.Start();
-            await task;
-        }
-
         void ReceiveAndFormScreen(bool? forceReset = false)
         {
             clientConnection.Send($"screen");

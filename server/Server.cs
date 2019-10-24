@@ -15,7 +15,7 @@ namespace server
 
         public Server(int port)
         {
-            this.arena = new Arena();
+            arena = new Arena();
             this.port = port;
             CreateSocket();
         }
@@ -34,7 +34,6 @@ namespace server
                 await AcceptPlayer();
             }
         }
-
 
         private async Task AcceptPlayer()
         {
@@ -57,7 +56,16 @@ namespace server
                 var player = new PlayerProcessor(playerName, arena, playerConnection);
 
                 player.OnStop = () => players.Remove(player);
+                player.OnStart = () => StartPlayers();
                 players.Add(player);
+            }
+        }
+
+        private void StartPlayers()
+        {
+            foreach (var player in players)
+            {
+                player.Start();
             }
         }
 

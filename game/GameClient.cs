@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace game
 {
@@ -55,7 +57,7 @@ namespace game
             {
                 PlayerName = playerName;
                 clientConnection.Send(playerName);
-                StartScreenCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
+                StartComunicationCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
             }
         }
 
@@ -68,6 +70,43 @@ namespace game
 
             clientConnection.Send($"move: {pressedKey.ToLower()}");
             ReceiveAndFormScreen();
+        }
+
+        private void ProcessServerMessage(string message)
+        {
+            var preparedMessage = message.ToLower();
+
+            if (preparedMessage.StartsWith("start"))
+            {
+                HasStarted = true;
+            }
+            else
+            {
+                throw new ArgumentException($"Cant process message {message}");
+            }
+        }
+
+        private async Task StartComunicationCycle()
+        {
+            var task = new Task(() =>
+            {
+                while (!HasFinished)
+                {
+                    if (clientConnection.HasMessage)
+                    {
+                        ProcessServerMessage(clientConnection.Receive());
+                    }
+                    else
+                    {
+                        ReceiveAndFormScreen();
+                    }
+
+                    Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
+                }
+            });
+
+            task.Start();
+            await task;
         }
     }
 }

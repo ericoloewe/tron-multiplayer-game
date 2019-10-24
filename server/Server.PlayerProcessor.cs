@@ -11,6 +11,8 @@ namespace server
             private Player player;
             private Arena arena;
             public Action OnStop { private get; set; } = () => { };
+            public Action OnStart { get; internal set; }
+            private bool wasStarted = false;
 
             public PlayerProcessor(string playerName, Arena arena, PlayerConnection connection)
             {
@@ -55,6 +57,14 @@ namespace server
                 await task;
             }
 
+            internal void Start()
+            {
+                if (!wasStarted)
+                {
+                    connection.Send("start");
+                }
+            }
+
             private void SendScreen()
             {
                 var screen = player.GetScreenAsString();
@@ -85,12 +95,7 @@ namespace server
                 }
                 else if (parsedCommand.StartsWith(GameCommands.START.ToString()))
                 {
-                    if (!arena.CanStart)
-                    {
-                        throw new ArgumentException($"Can't start the game");
-                    }
-
-                    arena.Start().ContinueWith(t => HandleGameStop());
+                    StartArena();
                 }
                 else if (parsedCommand.StartsWith(GameCommands.SCREEN.ToString()))
                 {
@@ -100,6 +105,18 @@ namespace server
                 {
                     throw new ArgumentException($"Invalid command: {command}");
                 }
+            }
+
+            private void StartArena()
+            {
+                if (!arena.CanStart)
+                {
+                    throw new ArgumentException($"Can't start the game");
+                }
+
+                arena.Start().ContinueWith(t => HandleGameStop());
+                wasStarted = true;
+                OnStart.Invoke();
             }
 
             private void HandleGameStop()

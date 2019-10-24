@@ -9,6 +9,13 @@ namespace game
         private readonly string serverIp = "127.0.0.1";
         private readonly int serverPort = 8080;
         private Socket sender;
+        public bool HasMessage
+        {
+            get
+            {
+                throw new System.NotImplementedException();
+            }
+        }
 
         internal GameClientConnection()
         {
