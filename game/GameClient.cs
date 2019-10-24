@@ -20,7 +20,6 @@ namespace game
         internal void Connect()
         {
             clientConnection = new GameClientConnection();
-            StartComunicationCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
         }
 
         internal void StartGame()
@@ -38,6 +37,7 @@ namespace game
             {
                 PlayerName = playerName;
                 commands.Enqueue(playerName);
+                StartComunicationCycle().ContinueWith(t => Console.WriteLine("The cicle finished!"));
             }
         }
 
@@ -53,9 +53,14 @@ namespace game
 
         private void ProcessServerMessage(string message)
         {
-            var preparedMessage = message.ToLower();
+            var preparedMessage = message.Trim().ToLower();
 
-            if (preparedMessage.Contains("started"))
+            if (string.IsNullOrEmpty(preparedMessage))
+            {
+                // throw new ArgumentException("server message can't be null or empty");
+                Console.WriteLine("server message can't be null or empty");
+            }
+            else if (preparedMessage.Contains("start"))
             {
                 HasStarted = true;
             }

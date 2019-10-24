@@ -55,7 +55,7 @@ namespace server
             private string ProcessClientMessage()
             {
                 string command;
-                var response = "";
+                string response;
 
                 command = connection.Receive();
 
