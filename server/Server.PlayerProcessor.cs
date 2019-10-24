@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading.Tasks;
 
 namespace server
@@ -35,11 +36,17 @@ namespace server
                     {
                         try
                         {
-                            command = ProcessClientMessage();
+                            command = ReceiveAndProcessClientMessage();
+                        }
+                        catch (SocketException ex)
+                        {
+                            Console.WriteLine("Stack: ");
+                            Console.WriteLine(ex);
+                            break;
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Stack");
+                            Console.WriteLine("Stack: ");
                             Console.WriteLine(ex);
                         }
                     }
@@ -52,7 +59,7 @@ namespace server
                 await task;
             }
 
-            private string ProcessClientMessage()
+            private string ReceiveAndProcessClientMessage()
             {
                 string command;
                 string response;
