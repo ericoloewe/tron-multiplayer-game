@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace game
@@ -107,7 +102,7 @@ namespace game
                             }
                             else
                             {
-                                using (SolidBrush myBrush = new SolidBrush(Color.FromArgb(0, 0, 0, 30)))
+                                using (SolidBrush myBrush = new SolidBrush(Color.FromArgb(50, 0, 0, 0)))
                                 {
                                     e.Graphics.FillRectangle(myBrush, x, y, xSize, ySize);
                                 }
