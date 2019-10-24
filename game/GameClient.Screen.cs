@@ -2,24 +2,23 @@
 {
     partial class GameClient
     {
-        void ReceiveAndFormScreen(bool? forceReset = false)
+        private bool needToResetScreen = true;
+
+        void FormScreen(string screenStr)
         {
-            clientConnection.Send($"screen");
-
-            var screenStr = clientConnection.Receive();
-
             string[] rows = screenStr.Split("\n");
 
-            if (forceReset.HasValue)
+            if (needToResetScreen)
             {
                 ResetScreen(rows.Length);
+                needToResetScreen = false;
             }
 
-            for (int i = 0; i < rows.Length; i++)
+            for (int i = 0; i < Screen.Length; i++)
             {
                 string[] columns = rows[i].Split(",");
 
-                for (int j = 0; j < columns.Length; j++)
+                for (int j = 0; j < Screen[i].Length; j++)
                 {
                     Screen[i][j] = Point.FromText(columns[j]);
                 }

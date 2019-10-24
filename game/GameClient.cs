@@ -69,7 +69,6 @@ namespace game
             }
 
             clientConnection.Send($"move: {pressedKey.ToLower()}");
-            ReceiveAndFormScreen();
         }
 
         private void ProcessServerMessage(string message)
@@ -82,7 +81,7 @@ namespace game
             }
             else
             {
-                throw new ArgumentException($"Cant process message {message}");
+                FormScreen(message);
             }
         }
 
@@ -92,15 +91,11 @@ namespace game
             {
                 while (!HasFinished)
                 {
-                    if (clientConnection.HasMessage)
-                    {
-                        ProcessServerMessage(clientConnection.Receive());
-                    }
-                    else
-                    {
-                        ReceiveAndFormScreen();
-                    }
+                    clientConnection.Send($"screen");
 
+                    var response = clientConnection.Receive();
+
+                    ProcessServerMessage(response);
                     Thread.Sleep(TIME_TO_UPDATE_SCREEN_IN_MS);
                 }
             });
