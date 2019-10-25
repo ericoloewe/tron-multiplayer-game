@@ -20,6 +20,7 @@ namespace game
         {
             InitializeComponent();
             client.OnScreenChange = () => arena.Invalidate();
+            client.OnMessage = m => MessageBox.Show(m);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -60,15 +61,7 @@ namespace game
 
         private void startButton_Click(object sender, System.EventArgs e)
         {
-            try
-            {
-                client.StartGame();
-                startButton.Enabled = false;
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("The room must have 2 players or more!");
-            }
+            client.StartGame();
         }
 
         private void arena_Paint(object sender, PaintEventArgs e)

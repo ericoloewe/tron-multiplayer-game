@@ -10,6 +10,7 @@ namespace game
         private static readonly int TIME_TO_UPDATE_SCREEN_IN_MS = 500;
         public Point[][] Screen { get; private set; }
         public string PlayerName { get; private set; }
+        public Action<string> OnMessage { private get; set; }
         public Action OnScreenChange { private get; set; }
         public bool HasStarted { get; private set; }
         public bool HasFinished { get; private set; } = false;
@@ -66,11 +67,11 @@ namespace game
             }
             else if (preparedMessage.StartsWith("bem vindo"))
             {
-                Console.WriteLine("Receive Bem vindo message");
+                OnMessage.Invoke("Receive Bem vindo message");
             }
             else if (preparedMessage.StartsWith("invalid-command"))
             {
-                Console.WriteLine("Comando invalido!");
+                OnMessage.Invoke("Comando invalido!");
             }
             else
             {
