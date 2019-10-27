@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace game
@@ -50,6 +51,7 @@ namespace game
             this.arena.Size = new System.Drawing.Size(ArenaWidth, ArenaHeight);
             this.arena.TabIndex = 11;
             this.arena.TabStop = false;
+            //this.arena.BackColor = Color.White;
             this.arena.Paint += new System.Windows.Forms.PaintEventHandler(this.arena_Paint);
 
             // 

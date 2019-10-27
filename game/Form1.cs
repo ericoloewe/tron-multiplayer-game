@@ -68,21 +68,21 @@ namespace game
         {
             // If there is an image and it has a location, 
             // paint it when the Form is repainted.
-            base.OnPaint(e);
+            //base.OnPaint(e);
 
             if (client.Screen != null)
             {
                 for (int i = 0; i < client.Screen.Length; i++)
                 {
                     var row = client.Screen[i];
-                    var xSize = ArenaWidth / client.Screen.Length;
-                    var x = i * xSize;
+                    float xSize = (float)e.ClipRectangle.Width / client.Screen.Length;
+                    int x = (int)Math.Round(i * xSize);
 
                     for (int j = 0; j < row.Length; j++)
                     {
                         Point point = row[j];
-                        var ySize = ArenaHeight / row.Length;
-                        var y = j * ySize;
+                        float ySize = (float)e.ClipRectangle.Height / row.Length;
+                        int y = (int)Math.Round(j * ySize);
 
                         if (point != null)
                         {
