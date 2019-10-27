@@ -132,6 +132,11 @@ namespace server
         {
             Point point = player.Position;
 
+            if (Width - 1 < point.X || Height - 1 < point.Y)
+            {
+                throw new ArgumentException($"Invalid point {point}");
+            }
+
             matrix[point.X][point.Y] = point;
         }
     }

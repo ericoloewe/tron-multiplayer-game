@@ -15,6 +15,7 @@ namespace server
             public Action OnStop { private get; set; } = () => { };
             public Action OnStart { get; internal set; }
             private bool wasStarted = false;
+            private bool wasStoped = false;
             private Queue<string> commands = new Queue<string>();
 
             public PlayerProcessor(string playerName, Arena arena, PlayerConnection connection)
@@ -163,9 +164,13 @@ namespace server
 
             private void HandleGameStop()
             {
-                Console.WriteLine("The game was stopped");
-                OnStop.Invoke();
-                player.Die();
+                if (!wasStoped)
+                {
+                    wasStoped = true;
+                    Console.WriteLine("The game was stopped");
+                    OnStop.Invoke();
+                    player.Die();
+                }
             }
         }
     }
