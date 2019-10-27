@@ -40,25 +40,36 @@ namespace server
             Console.WriteLine("Start to accept player");
             var playerConnection = new PlayerConnection(await listener.AcceptAsync());
 
-            playerConnection.Send("Bem vindo ao jogo, digite seu nome:");
+            PreparePlayer(playerConnection);
+        }
 
-            var playerName = playerConnection.Receive();
-
-            Console.WriteLine("Nome jogador: {0}", playerName);
-
-            if (players.Count == Arena.MAX_PLAYERS_IN_THE_GAME)
+        private void PreparePlayer(PlayerConnection playerConnection)
+        {
+            var task = new Task(() =>
             {
-                playerConnection.Send("The game is already full");
-                playerConnection.Dispose();
-            }
-            else
-            {
-                var player = new PlayerProcessor(playerName, arena, playerConnection);
+                playerConnection.Send("Bem vindo ao jogo, digite seu nome:");
 
-                player.OnStop = () => players.Remove(player);
-                player.OnStart = () => StartPlayers();
-                players.Add(player);
-            }
+                var playerName = playerConnection.Receive();
+
+                Console.WriteLine("Nome jogador: {0}", playerName);
+
+                if (players.Count == Arena.MAX_PLAYERS_IN_THE_GAME)
+                {
+                    playerConnection.Send("The game is already full");
+                    playerConnection.Dispose();
+                }
+                else
+                {
+                    var player = new PlayerProcessor(playerName, arena, playerConnection);
+
+                    player.OnStop = () => players.Remove(player);
+                    player.OnStart = () => StartPlayers();
+                    players.Add(player);
+                }
+            });
+
+            task.Start();
+            task.ContinueWith(t => Console.WriteLine("The player was prepared!"));
         }
 
         private void StartPlayers()
