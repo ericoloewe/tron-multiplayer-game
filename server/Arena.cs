@@ -81,7 +81,7 @@ namespace server
             }
         }
 
-        public void Move(Player player)
+        public void Update(Player player)
         {
             SetPlayerAtMatrix(player);
         }
@@ -102,7 +102,7 @@ namespace server
         {
             var colums = matrix.Select(m => $"{string.Join(",", m.ToList())}").ToArray();
 
-            return $"{string.Join("\n", colums)}";
+            return $"{string.Join("<br>", colums)}";
         }
 
         private void Stop()

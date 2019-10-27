@@ -65,7 +65,7 @@ namespace server
             }
 
             Position = nextPoint;
-            arena.Move(this);
+            arena.Update(this);
         }
 
         private MovementDirection GetNextDefaultDirection()
