@@ -130,7 +130,7 @@ namespace server
 
                     MovementDirection parsedDirection = (MovementDirection)Enum.Parse(typeof(MovementDirection), direction.Trim(), true);
 
-                    player.Move(parsedDirection);
+                    player.ChangeDirection(parsedDirection);
                 }
                 else if (parsedCommand.StartsWith(GameCommands.EXIT.ToString()))
                 {

@@ -10,7 +10,7 @@ namespace server
         public string Name { get; }
 
         private Arena arena;
-        private MovementDirection? lastDirection;
+        private MovementDirection? currentDirection;
         private bool isDead;
 
         public Player(string playerName, Arena arena)
@@ -35,31 +35,31 @@ namespace server
             return arena.ToString();
         }
 
-        public void Move()
+        public void ChangeDirection(MovementDirection nextDirection)
         {
-            Move(GetNextDefaultDirection());
+            currentDirection = nextDirection;
         }
 
-        public void Move(MovementDirection direction)
+        public void Move()
         {
-            lastDirection = direction;
+            currentDirection = GetNextDefaultDirection();
             Trace.Add(Position);
 
             Point nextPoint = (Point)Position.Clone();
 
-            if (direction == MovementDirection.DOWN && Position.Y < arena.Height)
+            if (currentDirection == MovementDirection.DOWN && Position.Y < arena.Height)
             {
                 nextPoint.Y++;
             }
-            else if (direction == MovementDirection.LEFT && Position.X > 0)
+            else if (currentDirection == MovementDirection.LEFT && Position.X > 0)
             {
                 nextPoint.X--;
             }
-            else if (direction == MovementDirection.RIGHT && Position.X < arena.Width)
+            else if (currentDirection == MovementDirection.RIGHT && Position.X < arena.Width)
             {
                 nextPoint.X++;
             }
-            else if (direction == MovementDirection.UP && Position.Y > 0)
+            else if (currentDirection == MovementDirection.UP && Position.Y > 0)
             {
                 nextPoint.Y--;
             }
@@ -72,9 +72,9 @@ namespace server
         {
             var nextDirection = MovementDirection.DOWN;
 
-            if (lastDirection != null)
+            if (currentDirection != null)
             {
-                nextDirection = lastDirection.Value;
+                nextDirection = currentDirection.Value;
             }
             else if (Position.Y == arena.Height - 1)
             {
