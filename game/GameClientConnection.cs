@@ -33,15 +33,7 @@ namespace game
 
             message = Encoding.UTF8.GetString(bytes, 0, bytesRec);
 
-            string parsedMessage = message.Trim();
-            int startIndex = parsedMessage.LastIndexOf("\n");
-
-            if (startIndex >= 0)
-            {
-                parsedMessage = parsedMessage.Remove(startIndex);
-            }
-
-            return parsedMessage;
+            return message.Trim();
         }
 
         internal void Send(string message)

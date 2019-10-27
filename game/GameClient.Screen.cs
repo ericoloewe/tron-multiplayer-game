@@ -6,7 +6,7 @@
 
         void FormScreen(string screenStr)
         {
-            string[] rows = screenStr.Split("\n");
+            string[] rows = screenStr.Split("<br>");
 
             if (needToResetScreen)
             {
