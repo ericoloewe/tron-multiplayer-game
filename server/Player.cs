@@ -8,10 +8,13 @@ namespace server
         public IList<Point> Trace { get; private set; } = new List<Point>();
         public Point Position { get; private set; }
         public string Name { get; }
+        public Action OnStop { private get; set; }
+        public Action OnDie { private get; set; }
+        public bool IsDead { get; private set; }
 
         private Arena arena;
         private MovementDirection? currentDirection;
-        private bool isDead;
+        private bool isStopped;
 
         public Player(string playerName, Arena arena)
         {
@@ -23,10 +26,11 @@ namespace server
 
         public void Die()
         {
-            if (!isDead)
+            if (!IsDead)
             {
-                arena.Remove(this);
-                isDead = true;
+                IsDead = true;
+                arena.Kill(this);
+                OnDie.Invoke();
             }
         }
 
@@ -66,6 +70,16 @@ namespace server
 
             Position = nextPoint;
             arena.Update(this);
+        }
+
+        internal void Stop()
+        {
+            if (!isStopped)
+            {
+                isStopped = true;
+                Die();
+                OnStop.Invoke();
+            }
         }
 
         private MovementDirection GetNextDefaultDirection()

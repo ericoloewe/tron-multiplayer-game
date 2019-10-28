@@ -73,6 +73,11 @@ namespace game
             {
                 OnMessage.Invoke("Comando invalido!");
             }
+            else if (preparedMessage.StartsWith("stop"))
+            {
+                HasFinished = true;
+                OnMessage.Invoke("O jogo terminou!");
+            }
             else
             {
                 FormScreen(message);

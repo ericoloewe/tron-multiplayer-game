@@ -23,7 +23,8 @@ namespace server
                 this.arena = arena;
                 player = new Player(playerName, arena);
                 this.connection = connection;
-                arena.OnStop = () => HandleGameStop();
+                player.OnStop = () => HandleGameStop();
+                player.OnDie = () => HandleGameStop();
                 StartCycle().ContinueWith(t => HandleGameStop());
             }
 
@@ -31,9 +32,10 @@ namespace server
             {
                 var task = new Task(() =>
                 {
-                    string command = "";
+                    var command = "";
+                    var parsedCommand = command.Trim().ToLower();
 
-                    while (!command.ToLower().StartsWith("exit") || !connection.IsConnected)
+                    while (!parsedCommand.StartsWith("exit") || !parsedCommand.StartsWith("stop") || !connection.IsConnected)
                     {
                         try
                         {
@@ -166,10 +168,10 @@ namespace server
             {
                 if (!wasStoped)
                 {
+                    commands.Enqueue("stop");
                     wasStoped = true;
                     Console.WriteLine("The game was stopped");
                     OnStop.Invoke();
-                    player.Die();
                 }
             }
         }

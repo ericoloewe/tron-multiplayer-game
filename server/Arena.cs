@@ -10,7 +10,6 @@ namespace server
     {
         public static readonly int MAX_PLAYERS_IN_THE_GAME = 4;
 
-        public Action OnStop { private get; set; } = () => { };
         public int Width { get; } = 80;
         public int Height { get; } = 80;
         public bool HasStarted { get; private set; }
@@ -69,21 +68,40 @@ namespace server
             SetPlayerAtMatrix(player);
         }
 
-        internal void Remove(Player player)
+        internal void Kill(Player player)
         {
+            if (!player.IsDead)
+                player.Die();
+
             if (HasStarted)
-            {
                 Stop();
-            }
             else
             {
+                var point = player.Position;
+
+                matrix[point.X][point.Y] = null;
                 players.Remove(player);
             }
         }
 
         public void Update(Player player)
         {
-            SetPlayerAtMatrix(player);
+            var point = player.Position;
+
+            if (point.X < 0 || point.Y < 0 || point.X > Width - 1 || point.Y > Height - 1)
+            {
+                Kill(player);
+                throw new ArgumentException($"Invalid next point {point}");
+            }
+            else if (matrix[point.X][point.Y] != null)
+            {
+                Kill(player);
+                throw new InvalidOperationException("There is another player at point");
+            }
+            else
+            {
+                SetPlayerAtMatrix(player);
+            }
         }
 
 
@@ -108,7 +126,11 @@ namespace server
         private void Stop()
         {
             HasFinished = true;
-            OnStop.Invoke();
+
+            foreach (var player in players)
+            {
+                player.Stop();
+            }
         }
 
         private void KeepMovingPlayers()
